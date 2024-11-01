@@ -1,58 +1,50 @@
-import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
+import json
 
-# File path for storing scan results
-RESULTS_FILE = "cac_results.json"
+# Configuration for the server
+HOST = '127.0.0.1'  # Change to '' to allow all interfaces
+PORT = 4420
+AUTH_KEY = "your_secret_key"  # Replace with your actual secret key
+OUTPUT_FILE = "cac_results.json"
 
-# Initialize an empty list to store scan results in memory
-scan_results = []
-
-# Function to write scan results to the file
-def save_results_to_file(data):
-    with open(RESULTS_FILE, 'a') as f:
-        f.write(json.dumps(data) + '\n')  # Write each result as a JSON line
-
-# Define a custom handler class to handle POST requests
-class ScanRequestHandler(BaseHTTPRequestHandler):
-    
+class RequestHandler(BaseHTTPRequestHandler):
     def do_POST(self):
-        # Determine the length of the incoming data
+        # Read content length
         content_length = int(self.headers['Content-Length'])
-        # Read and decode the incoming JSON data
         post_data = self.rfile.read(content_length).decode('utf-8')
         
-        # Try to parse the JSON data and add it to scan_results
-        try:
-            data = json.loads(post_data)
-            if 'ip' in data and 'status' in data:
-                scan_results.append(data)
-                save_results_to_file(data)  # Save to file
-                print(f"Received scan result: {data}")
+        # Check for the key in the request
+        key = self.headers.get('Authorization')
+        
+        if key == AUTH_KEY:
+            # Process the valid request
+            try:
+                # Parse the received data
+                data = json.loads(post_data)
+
+                # Write to the output file
+                with open(OUTPUT_FILE, 'a') as f:
+                    f.write(json.dumps(data) + "\n")
+
+                # Respond with success
                 self.send_response(200)
                 self.end_headers()
-                self.wfile.write(b"Data received and added to the list and file.")
-            else:
+                self.wfile.write(b'Successfully written to file.')
+            except json.JSONDecodeError:
                 self.send_response(400)
                 self.end_headers()
-                self.wfile.write(b"Invalid data format.")
-        except json.JSONDecodeError:
-            self.send_response(400)
+                self.wfile.write(b'Invalid JSON format.')
+        else:
+            # Reject request if the key is invalid
+            self.send_response(403)
             self.end_headers()
-            self.wfile.write(b"Invalid JSON.")
+            self.wfile.write(b'Forbidden: Invalid Key.')
 
-    def do_GET(self):
-        # Handle GET requests to view current scan results
-        self.send_response(200)
-        self.send_header("Content-type", "application/json")
-        self.end_headers()
-        self.wfile.write(json.dumps(scan_results).encode('utf-8'))
-
-# Run the server on port 8080
-def run(server_class=HTTPServer, handler_class=ScanRequestHandler, port=4420):
-    server_address = ('0.0.0.0', port)
+def run(server_class=HTTPServer, handler_class=RequestHandler):
+    server_address = (HOST, PORT)
     httpd = server_class(server_address, handler_class)
-    print(f"Starting server on port {port}...")
+    print(f'Server running on http://{HOST}:{PORT}/')
     httpd.serve_forever()
 
-# Start the server
-run()
+if __name__ == "__main__":
+    run()
