@@ -1,13 +1,13 @@
 import json
 
 # Define the input and output file names
-input_file = 'cac_results.json'  # Input file path
+input_file = 'db.json'  # Input file path
 output_file = 'cleaned_results.json'  # Output file for cleaned JSON lines
 
 # Function to clean and convert JSON strings
 def clean_json(input_file, output_file):
     try:
-        with open(input_file, 'r', encoding='utf-8') as file, open(output_file, 'w', encoding='utf-8') as outfile:
+        with open(input_file, 'r', encoding='utf-8') as file, open(output_file, 'a', encoding='utf-8') as outfile:
             for line in file:
                 # Remove surrounding quotes and unescape the string
                 clean_line = line.strip().strip('"')  # Remove quotes
