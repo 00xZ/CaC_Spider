@@ -1,5 +1,5 @@
 #!/bin/bash
-## colors This is the main loop to run on the worker server, it finds random servers(with emap.py or zmap) and talks to the jsoni.py and worker.py to send the data to the server
+## colors
 BOLD="\e[1m"
 CYAN='\033[0;36m'
 RED='\033[0;31m'
@@ -15,7 +15,7 @@ main_loop() {
     while true
     do
             echo -e "\n$RED${BOLD} [!]$green Scanning The Web $NC- $magenta Loop ${NC} : $CYAN${BOLD} $Counter_dub $RED${BOLD}[!]$NC$CYAN"
-            python3 emap.py 443 15 ips.txt 3
+            python3 emap.py 443 25 ips.txt 3
             #zmap -N 15 -p 443 -o ips.txt -B 100M -i wlan0
             echo -e "$RED${BOLD} 10 Sec Sleep : needed for gdn "
             sec=10
@@ -36,7 +36,10 @@ main_loop() {
             echo -e "$magenta${BOLD}Parsing Json${NC}$green${BOLD}"
             python3 jsonif.py
             echo -e "$green${BOLD}[!] Sending to server [!]${NC}$RED${BOLD}"
+            python3 fixer.py
+            echo -e "$magenta${BOLD}Fixing JSON${NC}$green${BOLD}"
             python3 worker.py
+            
             rm database.txt
             Counter_dub=$[$Counter_dub +1]
             if [ "$scan_type" == "-xss" ]; then
