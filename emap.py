@@ -1,4 +1,4 @@
-import threading ### My version of zmap, it works on windows thats why it was made zmap is a lot better, until i make this in rust
+import threading
 import sys, math
 import socket, ftplib
 import random
@@ -7,9 +7,9 @@ import time
 import requests
 print("     ______                       ")
 print("    / ____/  ____ ___  ____ _____ ")
-print("   / __/    / __ `__ \/ __ `/ __ \ ")
+print("   / __/    / __ `__ |/ __ `/ __ | ")
 print("  / /___   / / / / / / /_/ / /_/ /")
-print(" /_____/  /_/ /_/ /_/\__,_/ .___/ ")
+print(" /_____/  /_/ /_/ /_//_,_/ .___/ ")
 print("                         /_/      ")
 #print("\n")
 print("     github/00xZ - Eyezik")
