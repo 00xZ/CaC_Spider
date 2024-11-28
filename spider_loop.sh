@@ -36,7 +36,7 @@ main_loop() {
             echo -e "$magenta${BOLD}Parsing Json${NC}$green${BOLD}"
             python3 jsonif.py
             echo -e "$green${BOLD}[!] Sending to server [!]${NC}$RED${BOLD}"
-            python3 fixer.py
+            python3 clean_json.py
             echo -e "$magenta${BOLD}Fixing JSON${NC}$green${BOLD}"
             python3 worker.py
             
