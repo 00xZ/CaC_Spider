@@ -23,7 +23,7 @@ class RequestHandler(BaseHTTPRequestHandler):
                 data = json.loads(post_data)
 
                 # Write to the output file
-                with open(OUTPUT_FILE, 'a') as f:
+                with open(OUTPUT_FILE, 'w') as f:
                     f.write(json.dumps(data) + "\n")
 
                 # Respond with success
