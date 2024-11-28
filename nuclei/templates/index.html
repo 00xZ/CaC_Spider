@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eyezik - Nucleye</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- For dropdown icons -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212; /* Dark mode background */
+            color: white; /* Light text color */
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #1e1e1e; /* Dark background for container */
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #f8f9fa; /* Light text for heading */
+        }
+
+        .cve-item {
+            background-color: #333; /* Dark background for CVE items */
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .cve-item:hover {
+            background-color: #444; /* Darker background on hover */
+        }
+
+        .urls {
+            display: none;
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+
+        .url-item {
+            background-color: #444; /* Dark background for URL items */
+            padding: 5px;
+            border-left: 3px solid #007bff;
+            margin-bottom: 5px;
+            border-radius: 4px;
+        }
+
+        .severity {
+            font-weight: bold;
+        }
+
+        /* Severity level color styles */
+        .severity.low {
+            color: green; /* Green for low severity */
+        }
+
+        .severity.medium {
+            color: yellow; /* Yellow for medium severity */
+        }
+
+        .severity.high {
+            color: gold; /* Gold for high severity */
+        }
+
+        .severity.critical {
+            color: red; /* Bright red for critical severity */
+        }
+
+        /* Style for the expand all button */
+        .expand-all-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        .expand-all-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>NuclEye - CVE Vulnerabilities</h1>
+
+    <!-- Button to expand all CVE items -->
+    <button class="expand-all-btn" onclick="expandAllCVE()">Expand All CVEs</button>
+
+    <!-- This will contain the CVE dropdowns dynamically generated -->
+    <div id="cve-container"></div>
+</div>
+
+<script>
+    // Sample data from Flask server (this will be replaced by the actual server-side data)
+    const cveData = {{ cve_data | tojson | safe }};
+    
+    const container = document.getElementById('cve-container');
+
+    // Function to generate the CVE dropdown list
+    function generateCVEList(cveData) {
+        for (const cveId in cveData) {
+            if (cveData.hasOwnProperty(cveId)) {
+                const cveItem = document.createElement('div');
+                cveItem.classList.add('cve-item');
+                cveItem.innerHTML = `<strong>${cveId}</strong> - Severity: <span class="severity ${cveData[cveId].severity.toLowerCase()}">${cveData[cveId].severity}</span>`;
+                
+                // Create a container for URLs
+                const urlsContainer = document.createElement('div');
+                urlsContainer.classList.add('urls');
+
+                // Generate list of URLs for the current CVE
+                cveData[cveId].urls.forEach(urlObj => {
+                    const urlItem = document.createElement('div');
+                    urlItem.classList.add('url-item');
+                    urlItem.innerHTML = `URL: <a href="${urlObj.url}" target="_blank">${urlObj.url}</a> <br> Info: ${urlObj.info || 'No additional info'}`;
+                    urlsContainer.appendChild(urlItem);
+                });
+
+                // Toggle URL visibility on click
+                cveItem.addEventListener('click', () => {
+                    urlsContainer.style.display = urlsContainer.style.display === 'none' ? 'block' : 'none';
+                });
+
+                // Add the CVE item to the container
+                cveItem.appendChild(urlsContainer);
+                container.appendChild(cveItem);
+            }
+        }
+    }
+
+    // Generate the CVE list when the page loads
+    generateCVEList(cveData);
+
+    // Function to expand all CVEs and show all URLs
+    function expandAllCVE() {
+        const allUrls = document.querySelectorAll('.urls');
+        allUrls.forEach(urlsContainer => {
+            urlsContainer.style.display = 'block';
+        });
+    }
+</script>
+
+</body>
+</html>
